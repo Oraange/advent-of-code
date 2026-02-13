@@ -1,0 +1,17 @@
+[project]
+name = "aoc"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.4.2",
+    "pulp>=3.3.0",
+    "python-magic>=0.4.27",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.9.0",
+    "pulp>=3.3.0",
+]
