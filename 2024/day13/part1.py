@@ -13,41 +13,35 @@ def parse_input(attempt: str):
 def main(datas: str):
     attempts = datas.strip().split("\n\n")
     ans = 0
-    cnt = 0
     for attempt in attempts:
-        cnt += 1
         X, Y, PRIZE = parse_input(attempt)
-        if X[0] * Y[1] == X[1] * Y[0]:
-            if PRIZE[0] * Y[1] == PRIZE[1] * Y[0]:
+        det = X[0] * Y[1] - X[1] * Y[0]
+        if det == 0:
+            if PRIZE[0] * Y[1] == PRIZE[1] * X[1]:
                 total_prize = float("inf")
                 t = PRIZE[0] // X[1]
-                print(f"{cnt} | Infinitely many solutions")
                 for i in range(t, -1, -1):
                     if (PRIZE[0] - i * X[1]) % X[0] == 0:
                         a = (PRIZE[0] - i * X[1]) // X[0]
                         b = i
                         total_prize = min(total_prize, 3 * a + b)
             else:
-                print(f"{cnt} | No solution")
                 continue
         else:
-            sol = np.linalg.solve(np.array([X, Y]), np.array(PRIZE))
-            print(f"Solution: {sol}")
-            for s in sol:
-                print(f"{s}", end=" ")
-            if all(s.is_integer() and s >= 0 for s in sol):
-                print(f"{cnt} | Unique solution")
-                total_prize = 3 * sol[0] + sol[1]
+            sol_x, sol_y = (
+                (Y[1] * PRIZE[0] - X[1] * PRIZE[1]) / det,
+                (-Y[0] * PRIZE[0] + X[0] * PRIZE[1]) / det,
+            )
+            if sol_x >= 0 and sol_y >= 0 and sol_x.is_integer() and sol_y.is_integer():
+                total_prize = 3 * int(sol_x) + int(sol_y)
             else:
-                print(f"{cnt} | No solution")
                 continue
 
-        print(f"Total prize: {total_prize}")
         ans += int(total_prize)
     return ans
 
 
 if __name__ == "__main__":
-    with open("2024/day13/test.txt", "r") as f:
+    with open("2024/day13/input.txt", "r") as f:
         datas = f.read()
     print(main(datas))
