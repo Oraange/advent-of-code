@@ -1,4 +1,5 @@
 import heapq
+from collections import deque
 
 
 def dijkstra(maze, start, end):
@@ -7,6 +8,7 @@ def dijkstra(maze, start, end):
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
     dist = [[[float("inf")] * 4 for _ in range(m)] for _ in range(n)]
     dist[start[0]][start[1]][start_dir] = 0
+    visited = set()
 
     pq = [(0, start[0], start[1], start_dir)]
 
@@ -29,7 +31,26 @@ def dijkstra(maze, start, end):
                     dist[nr][nc][i] = next_cost
                     heapq.heappush(pq, (next_cost, nr, nc, i))
 
-    return min(dist[end[0]][end[1]])
+    q = deque(
+        [
+            (end[0], end[1], i)
+            for i in range(4)
+            if dist[end[0]][end[1]][i] == min(dist[end[0]][end[1]])
+        ]
+    )
+
+    while q:
+        r, c, rot = q.popleft()
+        visited.add((r, c))
+
+        for i, (dr, dc) in enumerate(directions):
+            nr, nc = r - dr, c - dc
+            if 0 <= nr < n and 0 <= nc < m and maze[nr][nc] != "#":
+                for j in range(4):
+                    if dist[r][c][rot] == dist[nr][nc][j] + (1 if rot == j else 1001):
+                        q.append((nr, nc, j))
+
+    return len(visited)
 
 
 def main(data):
