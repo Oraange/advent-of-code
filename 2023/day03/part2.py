@@ -1,6 +1,6 @@
 import os
 
-with open(os.path.join(os.path.dirname(__file__), "test.txt")) as f:
+with open(os.path.join(os.path.dirname(__file__), "input.txt")) as f:
     schemes = f.read().splitlines()
 
 n = len(schemes)
@@ -15,12 +15,12 @@ def is_boundary(x, y):
 def check_num(cx, cy, visited):
     if is_boundary(cx, cy) and schemes[cx][cy].isdigit() and (cx, cy) not in visited:
         visited.add((cx, cy))
-        return schemes[cx][cy]
+        return True
 
-    return None
+    return False
 
 
-def get_num(px, py):
+def get_nums(px, py):
     visited = set()
     nums = []
 
@@ -36,19 +36,33 @@ def get_num(px, py):
     ):
         cx, cy = px + dx, py + dy
         tmp_num = ""
-        if schemes[cx][cy].isdigit():
-            while check_num(cx, cy, visited):
-                tmp_num = check_num(cx, cy, visited) + tmp_num
-                cy -= 1
+        if is_boundary(cx, cy) and schemes[cx][cy].isdigit():
+            pivot = cy
+            while check_num(cx, pivot, visited):
+                tmp_num = schemes[cx][pivot] + tmp_num
+                pivot -= 1
 
-            while check_num(cx, cy + 1, visited):
-                tmp_num += check_num(cx, cy + 1, visited)
-                cy += 1
+            pivot = cy
+            while check_num(cx, pivot + 1, visited):
+                tmp_num += schemes[cx][pivot + 1]
+                pivot += 1
+
         if tmp_num != "":
-            nums.append(tmp_num)
+            nums.append(int(tmp_num))
+
+    return nums
 
 
 def main(schm):
+    ans = 0
     for i in range(n):
         for j in range(m):
-            ...
+            if schm[i][j] == "*":
+                nums = get_nums(i, j)
+                if len(nums) == 2:
+                    ans += nums[0] * nums[1]
+
+    return ans
+
+
+print(main(schemes))
